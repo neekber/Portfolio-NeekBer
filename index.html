@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Portfolio - NeekBer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00ff41;
+            --secondary: #0a0e27;
+            --accent: #1a1f3a;
+            --text: #e0e0e0;
+            --highlight: #00d9ff;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--secondary);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            padding: 6rem 2rem 2rem;
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .page.previous {
+            transform: translateX(-100%);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--primary);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Portfolio Page */
+        .portfolio-content {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+            animation: glitch 3s infinite;
+        }
+
+        .hero-text h2 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--highlight);
+            margin-bottom: 2rem;
+        }
+
+        .hero-text p {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            background: var(--primary);
+            color: var(--secondary);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: var(--accent);
+            padding: 1.5rem;
+            border: 1px solid var(--primary);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.3);
+        }
+
+        .skill-card:hover::before {
+            width: 100%;
+        }
+
+        .skill-card h3 {
+            color: var(--highlight);
+            margin-bottom: 0.5rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+        }
+
+        .skill-card p {
+            color: var(--text);
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        }
+
+        /* Social Links Page */
+        .social-content {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .social-content h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .social-content > p {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text);
+            margin-bottom: 3rem;
+        }
+
+        .social-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            background: var(--accent);
+            padding: 2rem 1rem;
+            border: 2px solid var(--primary);
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
+
+        .social-link::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .social-link:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .social-link:hover {
+            border-color: var(--highlight);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+            transform: translateY(-10px);
+        }
+
+        .social-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .social-link:hover .social-icon {
+            color: var(--highlight);
+            transform: scale(1.1);
+        }
+
+        .social-link h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-link p {
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            color: var(--text);
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Background Animation */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-2px); }
+            40% { transform: translateX(2px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+
+        /* Tablet Responsive */
+        @media (max-width: 1024px) {
+            .portfolio-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .social-links-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                flex-direction: column;
+                background: rgba(10, 14, 39, 0.98);
+                padding: 2rem;
+                gap: 1.5rem;
+                transition: right 0.3s;
+                border-left: 1px solid var(--primary);
+                min-width: 200px;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .page {
+                padding: 5rem 1.5rem 2rem;
+            }
+
+            .portfolio-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-text {
+                text-align: center;
+            }
+
+            .cta-button {
+                display: block;
+                text-align: center;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-links-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .social-link {
+                min-height: 160px;
+                padding: 1.5rem 1rem;
+            }
+
+            .social-icon {
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .page {
+                padding: 4.5rem 1rem 1.5rem;
+            }
+
+            .hero-text h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-text h2 {
+                font-size: 1.1rem;
+            }
+
+            .hero-text p {
+                font-size: 0.9rem;
+            }
+
+            .skill-card {
+                padding: 1.2rem;
+            }
+
+            .social-link {
+                min-height: 140px;
+                padding: 1.2rem 0.8rem;
+            }
+
+            .social-icon {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* Landscape Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .page {
+                min-height: auto;
+                padding: 5rem 2rem 2rem;
+            }
+
+            .portfolio-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+
+    <nav>
+        <div class="logo">&lt;SEC/&gt;</div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="#" data-page="portfolio" class="active">Portfolio</a>
+            <a href="#" data-page="social">Connect</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Portfolio Page -->
+        <div class="page active" id="portfolio">
+            <div class="portfolio-content">
+                <div class="hero-text">
+                    <h1>Cyber Security Expert</h1>
+                    <h2>Defending Digital Frontiers</h2>
+                    <p>Specialized in penetration testing, threat analysis, and security architecture. Protecting organizations from emerging cyber threats with cutting-edge solutions and strategic defense mechanisms.</p>
+                    <a href="#" class="cta-button" data-page="social">Get In Touch →</a>
+                </div>
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <h3>Penetration Testing</h3>
+                        <p>Advanced exploitation techniques and vulnerability assessment</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Security Architecture</h3>
+                        <p>Designing robust security frameworks and infrastructure</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Threat Intelligence</h3>
+                        <p>Real-time monitoring and threat hunting operations</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Incident Response</h3>
+                        <p>Rapid detection, analysis, and mitigation strategies</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Links Page -->
+        <div class="page" id="social">
+            <div class="social-content">
+                <h1>Let's Connect</h1>
+                <p>Find me across various platforms and let's collaborate on securing the digital world.</p>
+                <div class="social-links-grid">
+                    <a href="https://github.com/neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        <h3>GitHub</h3>
+                        <p>@neekber</p>
+                    </a>
+                    <a href="https://twitter.com/neek_ber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <h3>Twitter</h3>
+                        <p>@neek_ber</p>
+                    </a>
+                    <!-- <a href="https://app.hackthebox.com/profile/neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.996 0L1.11 6v12l10.887 6 10.888-6V6z M6.67 8.596l5.328-2.94 5.328 2.94v5.888l-5.328 2.94-5.328-2.94z"/>
+                        </svg>
+                        <h3>HackTheBox</h3>
+                        <p>CTF Platform</p>
+                    </a> -->
+                    <a href="https://hackerone.com/neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-.5 19.5v-3h1v3h-1zm.5-4.5c-.828 0-1.5-.672-1.5-1.5V9c0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5v4.5c0 .828-.672 1.5-1.5 1.5z"/>
+                        </svg>
+                        <h3>HackerOne</h3>
+                        <p>Bug Bounty Hunter</p>
+                    </a>
+                    <a href="https://tryhackme.com/p/neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10.705 0C7.54 0 4.902 2.285 4.349 5.291a4.525 4.525 0 0 0-4.107 4.5 4.525 4.525 0 0 0 4.52 4.520h6.761a.625.625 0 1 0 0-1.25H4.761a3.273 3.273 0 0 1-3.27-3.27 3.273 3.273 0 0 1 3.27-3.27c.054 0 .11.002.165.005a.625.625 0 0 0 .623-.48C6.003 3.276 8.173 1.25 10.705 1.25c2.612 0 4.826 2.122 5.253 5.039a.625.625 0 0 0 .595.544h.675c1.672 0 3.032 1.36 3.032 3.032s-1.36 3.032-3.032 3.032h-2.103a.625.625 0 1 0 0 1.25h2.103c2.361 0 4.282-1.92 4.282-4.282s-1.92-4.282-4.282-4.282h-.178C16.497 2.15 13.854 0 10.705 0zm1.26 13.676a.625.625 0 0 0-.883 0l-5 5a.625.625 0 1 0 .883.883l3.933-3.933v7.749a.625.625 0 1 0 1.25 0v-7.749l3.933 3.933a.625.625 0 1 0 .883-.883l-5-5z"/>
+                        </svg>
+                        <h3>TryHackMe</h3>
+                        <p>Learning Platform</p>
+                    </a>
+                    <a href="https://medium.com/@neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/>
+                        </svg>
+                        <h3>Medium</h3>
+                        <p>Technical Writings</p>
+                    </a>
+                    <a href="https://bugcrowd.com/neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.373 0 0 5.373 0 12c0 6.628 5.373 12 12 12 6.628 0 12-5.372 12-12 0-6.627-5.372-12-12-12zm5.015 14.116c-.085 1.746-1.215 3.104-2.831 3.396l.01.828c0 .314-.255.569-.569.569h-3.244a.569.569 0 01-.569-.569l.01-.828c-1.616-.292-2.746-1.65-2.831-3.396a.569.569 0 01.569-.599h1.782c.273 0 .507.194.558.462.146.767.793 1.338 1.589 1.338s1.443-.571 1.589-1.338a.569.569 0 01.558-.462h1.782c.329 0 .589.279.569.599zM9.5 9.75c0 .414-.336.75-.75.75s-.75-.336-.75-.75.336-.75.75-.75.75.336.75.75zm6.5 0c0 .414-.336.75-.75.75s-.75-.336-.75-.75.336-.75.75-.75.75.336.75.75z"/>
+                        </svg>
+                        <h3>Bugcrowd</h3>
+                        <p>Bug Bounty Platform</p>
+                    </a>
+                    <a href="https://linkedin.com/in/neekber" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        <h3>LinkedIn</h3>
+                        <p>Professional Network</p>
+                    </a>
+                    <a href="mailto:your.neekber@gmail.com" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                        <h3>Email</h3>
+                        <p>neekber@gmail.com</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+    <script>
+        // Matrix Rain Background
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = '01アイウエオカキクケコサシスセソタチツテト';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 14, 39, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Page Navigation
+        const navLinks = document.querySelectorAll('[data-page]');
+        const pages = document.querySelectorAll('.page');
+
+        function navigateToPage(pageName) {
+            pages.forEach(page => {
+                if (page.id === pageName) {
+                    page.classList.add('active');
+                    page.classList.remove('previous');
+                } else if (page.classList.contains('active')) {
+                    page.classList.remove('active');
+                    page.classList.add('previous');
+                    setTimeout(() => page.classList.remove('previous'), 600);
+                }
+            });
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('data-page') === pageName) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageName = link.getAttribute('data-page');
+                navigateToPage(pageName);
+            });
+        });
+    </script>
+</body>
+</html>
